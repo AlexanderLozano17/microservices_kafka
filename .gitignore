@@ -1,0 +1,98 @@
+# ===========================
+# 🔹 Archivos compilados
+# ===========================
+*.class
+*.jar
+*.war
+*.ear
+
+# ===========================
+# 🔹 Directorios de construcción
+# ===========================
+/target/
+**/target/
+.build/
+.out/
+
+# ===========================
+# 🔹 Dependencias de Maven y Gradle
+# ===========================
+/.mvn/
+/mvnw
+/mvnw.cmd
+/.gradle/
+.gradle/
+
+# ===========================
+# 🔹 Configuración de IDEs
+# ===========================
+# IntelliJ IDEA
+/.idea/
+/*.iml
+
+# Eclipse
+/.project
+/.classpath
+/.settings/
+/.factorypath
+
+# VS Code
+/.vscode/
+
+# ===========================
+# 🔹 Archivos de logs y pruebas
+# ===========================
+*.log
+/test-logs/
+
+# ===========================
+# 🔹 Archivos específicos del sistema operativo
+# ===========================
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Linux
+*.swp
+
+# ===========================
+# 🔹 Docker y Configuración
+# ===========================
+!docker-compose.yml  # Permitir el archivo principal de Docker Compose
+!docker-compose*.yml # Permitir variantes como docker-compose.override.yml
+!.dockerignore       # Permitir el archivo .dockerignore
+
+# ===========================
+# 🔹 Spring Boot y Configuración YAML
+# ===========================
+!application-*.yml # Permitir todas las variantes de application.yml
+
+# ===========================
+# 🔹 Ignorar archivos de configuración de entorno
+# ===========================
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.test
+
+# =========================== 
+# Excepción: No ignorar .env-template
+# ===========================
+!.env-template
+!application-template.yml
+
+# ===========================
+# 🔹 Otros
+# ===========================
+*.gz # Ignorar archivos comprimidos
+application.yml
+application.properties
+
+
+
+
