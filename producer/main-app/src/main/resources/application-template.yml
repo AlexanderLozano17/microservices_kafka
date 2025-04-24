@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: ${PRODUCER_APP_PORT}
   servlet:
     context-path: /${CONTEXT_PATH}
 

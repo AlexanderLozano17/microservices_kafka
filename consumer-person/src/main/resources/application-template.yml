@@ -1,11 +1,11 @@
 server:
-  port: 8082
+  port: ${CONSUMER_PERSON_APP_PORT}
   servlet:
     context-path: /
 
 spring:
   application:
-    name: consumer-person
+    name: ${CONSUMER_PERSON_APP_NAME}
 
 kafka:
   bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}

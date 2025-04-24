@@ -1,11 +1,11 @@
 server:
-  port: 8083
+  port: ${CONSUMER_PUBLICATION_APP_PORT}
   servlet:
     context-path: /
 
 spring:
   application:
-    name: consumer-publication
+    name: ${CONSUMER_PUBLICATION_APP_NAME}
 
 logging:
   level:

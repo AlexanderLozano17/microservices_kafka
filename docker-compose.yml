@@ -83,9 +83,12 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
 
       # Configuracion de replicacion (para alta disponibilidad)
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2 # Replicas del topico __consumer_offsets
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 2       # Replicas por defecto en nuevos topicos
-      KAFKA_MIN_INSYNC_REPLICAS: 1              # Minimo de relicas sincronizadas antes de aceptar un mensaje    networks:
+      # Replicas del topico __consumer_offsets
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2 
+      # Replicas por defecto en nuevos topicos
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 2       
+      # Minimo de relicas sincronizadas antes de aceptar un mensaje
+      KAFKA_MIN_INSYNC_REPLICAS: 1              
     networks:
       - kafka_network
     volumes:
@@ -117,6 +120,7 @@ services:
     environment:
       POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
       POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:
@@ -125,9 +129,9 @@ services:
 #contendor de la aplicacion producer
   app-producer:
     build: #  Define como se construye la imagen del contenedor.
-      context: ./ # Usa el directorio actual como contexto de construccion.
+      context: ./producer # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
-    container_name: producerKafka
+    container_name: producer
     depends_on:
       - postgres
       - kafka1
@@ -144,25 +148,57 @@ services:
     networks:
       - kafka_network
 
-  #contendor de la aplicacion consumer
+  #contendor de la aplicacion consumer-person
   app-consumer-person:
     build: #  Define como se construye la imagen del contenedor.
       context: ./consumer-person # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
     container_name: consumerPerson
     depends_on:
-      - postgres
       - kafka1
       - kafka2      
     env_file: # Carga variables de entorno desde un archivo .env
       - .env
     environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
       SPRING_KAFKA_BOOTSTRAP_SERVERS: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} #  Lista de brokers de Kafka a los que se conecta.
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL} # URL de conexión a la base de datos.
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME} # Usuario de la base de datos.
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD} # Contraseña de la base de datos.
     ports:
       - 8082:8082
+    networks:
+      - kafka_network
+
+  #contendor de la aplicacion consumer-publication
+  app-consumer-publication:
+    build: #  Define como se construye la imagen del contenedor.
+      context: ./consumer-publication # Usa el directorio actual como contexto de construccion.
+      dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
+    container_name: consumerPublication
+    depends_on:
+      - kafka1
+      - kafka2      
+    env_file: # Carga variables de entorno desde un archivo .env
+      - .env
+    environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} #  Lista de brokers de Kafka a los que se conecta.
+    ports:
+      - 8083:8083
+    networks:
+      - kafka_network
+
+  #contendor de la aplicacion consumer-commentary
+  app-consumer-commentary:
+    build: #  Define como se construye la imagen del contenedor.
+      context: ./consumer-commentary # Usa el directorio actual como contexto de construccion.
+      dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
+    container_name: consumerCommentary
+    depends_on:
+      - kafka1
+      - kafka2      
+    env_file: # Carga variables de entorno desde un archivo .env
+      - .env
+    environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} #  Lista de brokers de Kafka a los que se conecta.
+    ports:
+      - 8084:8084
     networks:
       - kafka_network
 
