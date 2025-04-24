@@ -15,6 +15,7 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.util.backoff.FixedBackOff;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -30,11 +31,7 @@ public class KafkaConsumerConfig {
 	@Bean
 	public ConsumerFactory<String, ResponseKafka<Publication>> responseKafkaConsumerFactory() {
 		
-	    ObjectMapper objectMapper = new ObjectMapper();
-	    objectMapper.registerModule(new JavaTimeModule());
-	    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // formato ISO
-
-	    JsonDeserializer<ResponseKafka<Publication>> deserializer = new JsonDeserializer<>(ResponseKafka.class, objectMapper, false);
+	    JsonDeserializer<ResponseKafka<Publication>> deserializer = new JsonDeserializer<>(new TypeReference<ResponseKafka<Publication>>() {});
 	    deserializer.addTrustedPackages("*");
 		
 	    Map<String, Object> props = new HashMap<>();
