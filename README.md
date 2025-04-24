@@ -4,7 +4,6 @@ Este proyecto demuestra cómo integrar **Spring Boot con Apache Kafka**, permiti
 
 El proyecto de **Spring Boot** está desarrollado de manera **modular**, lo que facilita la escalabilidad, mantenimiento y separación de responsabilidades.
 
----
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -23,7 +22,6 @@ El proyecto de **Spring Boot** está desarrollado de manera **modular**, lo que 
 | **Jackson**         | Serialización y deserialización JSON                      |
 | **Maven**           | Gestión del ciclo de vida del proyecto Java               |
 
----
 
 ## 💡 Buenas prácticas y patrones aplicados
 
@@ -40,27 +38,22 @@ El proyecto de **Spring Boot** está desarrollado de manera **modular**, lo que 
 ## **📌 Arquitectura del Proyecto**
 
 ```
-producer/        # Proyecto raíz (Parent POM)
+📁 microservices
+├── 📁 producer                 # Proyecto multi-módulo (parent POM adentro)
+│   ├── 📁 main-app             # Punto de entrada Spring Boot
+│   ├── 📁 module-core          # Lógica de negocio principal
+│   ├── 📁 module-producer      # Productor de mensajes Kafka
+│   ├── 📁 module-dto           # Data Transfer Objects (DTO)
+│   ├── 📁 module-common        # Utilitarios, constantes, logs, etc.
+│   ├── 📄 pom.xml              # POM raíz del proyecto producer
 │
-├── main-app/                     # Módulo principal (punto de entrada de la aplicación)
-│   └── ...                       # Contiene el arranque de Spring Boot y las configuraciones de contexto
+├── 📁 consumer-person          # Microservicio consumidor de mensajes de persona
+├── 📁 consumer-publication     # Microservicio consumidor de publicaciones
+├── 📁 consumer-commentary      # Microservicio consumidor de comentarios
 │
-├── module-core/                  # Módulo con la lógica de negocio principal
-│   └── ...                       # Implementa los servicios, reglas de negocio, interfaces
-│
-├── module-producer/             # Módulo que produce y envía mensajes a Kafka
-│   └── ...                       # Usa clases de core para procesar y enviar mensajes
-│
-├── module-dto/                  # Módulo que contiene los Data Transfer Objects (DTO)
-│   └── ...                       # Define los objetos para intercambio de datos entre capas
-│
-├── module-common/               # Módulo con componentes reutilizables y utilitarios
-│   └── ...                       # Define excepciones, constantes, helpers, logs, etc.
-│
-├── Dockerfile                   # Imagen Docker para empaquetar el main-app
-├── docker-compose.yml           # Define los servicios Kafka, Zookeeper y Kafka UI
-├── pom.xml                      # POM raíz que gestiona todos los módulos
-└── README.md                    # Documentación del proyecto
+├── 📄 docker-compose.yml       # Servicios Kafka, Zookeeper y Kafka UI
+└── 📄 README.md                # Documentación general del sistema
+
 
 ```
 Este diseño modular permite mayor **reutilización** y **mantenibilidad**.
