@@ -1,4 +1,4 @@
-package com.publication.config;
+package com.commentary.config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,11 +16,9 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.util.backoff.FixedBackOff;
 
+import com.commentary.domain.event.model.Commentary;
+import com.commentary.domain.event.model.ResponseKafka;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.publication.domain.event.model.Publication;
-import com.publication.domain.event.model.ResponseKafka;
-import com.publication.util.Constants;
-
 
 @Configuration
 @EnableKafka
@@ -30,9 +28,9 @@ public class KafkaConsumerConfig {
 	private String bootstrapServers;
 
 	@Bean
-	public ConsumerFactory<String, ResponseKafka<Publication>> responseKafkaConsumerFactory() {
+	public ConsumerFactory<String, ResponseKafka<Commentary>> responseKafkaConsumerFactory() {
 		
-	    JsonDeserializer<ResponseKafka<Publication>> deserializer = new JsonDeserializer<>(new TypeReference<ResponseKafka<Publication>>() {});
+	    JsonDeserializer<ResponseKafka<Commentary>> deserializer = new JsonDeserializer<>(new TypeReference<ResponseKafka<Commentary>>() {});
 	    deserializer.addTrustedPackages("*");
 		
 	    Map<String, Object> props = new HashMap<>();
@@ -45,8 +43,8 @@ public class KafkaConsumerConfig {
 	}
 	
 	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String, ResponseKafka<Publication>> responseKafkaListenerContainerFactory() {
-	    ConcurrentKafkaListenerContainerFactory<String, ResponseKafka<Publication>> factory = new ConcurrentKafkaListenerContainerFactory<>();
+	public ConcurrentKafkaListenerContainerFactory<String, ResponseKafka<Commentary>> responseKafkaListenerContainerFactory() {
+	    ConcurrentKafkaListenerContainerFactory<String, ResponseKafka<Commentary>> factory = new ConcurrentKafkaListenerContainerFactory<>();
 	    factory.setConsumerFactory(responseKafkaConsumerFactory());
 
 	    // Opcional: manejar errores en consumo

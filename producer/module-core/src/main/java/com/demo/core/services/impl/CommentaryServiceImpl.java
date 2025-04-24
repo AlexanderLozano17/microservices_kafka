@@ -15,10 +15,8 @@ import com.demo.core.services.CommentaryService;
 import com.demo.dto.dto.CommentaryDTO;
 import com.demo.dto.dto.ResponseKafka;
 import com.demo.producer.services.KafkaProducerCommentaryService;
-import com.demo.producer.services.KafkaProducerPersonService;
 import com.demo.utils.LogCommentary;
 import com.demo.utils.LogHelper;
-import com.demo.utils.LogPublication;
 
 @Service
 public class CommentaryServiceImpl implements CommentaryService {
@@ -41,7 +39,7 @@ public class CommentaryServiceImpl implements CommentaryService {
 		
 		try {
 			Commentary saveCommentary = commentaryRepository.save(commentary);	
-			String mensaje = String.format(LogPublication.PUBLICATION_SAVE_SUCCESS, saveCommentary.getId());			
+			String mensaje = String.format(LogCommentary.COMMENT_SAVE_SUCCESS, saveCommentary.getId());			
 			logger.info(LogHelper.success(getClass(), "createCommentary", mensaje));
 			
 			CommentaryDTO commentaryDTO = getommentaryDTO(saveCommentary);		
@@ -68,7 +66,7 @@ public class CommentaryServiceImpl implements CommentaryService {
 	@Transactional(readOnly = true)
 	public List<Commentary> getAllCommentaries() {
 		logger.info(LogHelper.start(getClass(), "getAllCommentaries"));
-		return  commentaryRepository.findAll() ;
+		return commentaryRepository.findAll() ;
 	}
 
 	@Override

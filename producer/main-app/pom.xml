@@ -33,7 +33,7 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<!-- Dependecia de Open API -->
         <dependency>
 	    	<groupId>org.springdoc</groupId>

@@ -1,0 +1,26 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: consumer-publication
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+
+kafka:
+  bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # Habilitar todos los endpoints de administración
+  endpoint:
+    mappings:
+      enabled: true  # Habilitar el mapeo de endpoints para la gestión de la aplicación

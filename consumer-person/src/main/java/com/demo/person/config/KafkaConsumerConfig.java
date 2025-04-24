@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -23,6 +24,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 @Configuration
 @EnableKafka
 public class KafkaConsumerConfig {
+	
+	@Value("${kafka.bootstrap-servers}")
+	private String bootstrapServers;
 
 	@Bean
 	public ConsumerFactory<String, ResponseKafka<Person>> responseKafkaConsumerFactory() {
@@ -31,7 +35,7 @@ public class KafkaConsumerConfig {
 	    deserializer.addTrustedPackages("*");
 	    
 	    Map<String, Object> props = new HashMap<>();
-	    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, Constants.BOOTSTRAP_SERVERS_CONFIG); // Dirección del broker de Kafka
+	    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers); // Dirección del broker de Kafka
 	    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"); // Inicia el consumo desde el principio del topic si no hay offset anterior
 	    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 	    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ResponseKafkaDeserializer.class); // Manejador de la deserialización
