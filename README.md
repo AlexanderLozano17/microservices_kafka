@@ -40,7 +40,7 @@ El proyecto de **Spring Boot** está desarrollado de manera **modular**, lo que 
 ## **📌 Arquitectura del Proyecto**
 
 ```
-springboot_kafka_producer/        # Proyecto raíz (Parent POM)
+producer/        # Proyecto raíz (Parent POM)
 │
 ├── main-app/                     # Módulo principal (punto de entrada de la aplicación)
 │   └── ...                       # Contiene el arranque de Spring Boot y las configuraciones de contexto

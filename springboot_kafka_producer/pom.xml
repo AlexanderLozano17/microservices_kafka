@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.demo</groupId>
-	<artifactId>springboot_kafka_producer</artifactId>
+	<artifactId>producer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
@@ -20,7 +20,7 @@
 	
 	<!-- Informacion del repositorio SCM -->
 	<scm>
-		<url>https://github.com/AlexanderLozano17/springboot_kafka_producer.git</url>
+		<url>https://github.com/AlexanderLozano17/microservices_kafka.git</url>
 	</scm>
 
 	<modules>

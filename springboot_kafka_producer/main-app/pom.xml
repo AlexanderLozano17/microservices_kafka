@@ -6,7 +6,7 @@
 
 	<parent>
 		<groupId>com.demo</groupId>
-		<artifactId>springboot_kafka_producer</artifactId>
+		<artifactId>producer</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- Ajusta la ruta si el padre esta en otro lugar -->
 	</parent>
