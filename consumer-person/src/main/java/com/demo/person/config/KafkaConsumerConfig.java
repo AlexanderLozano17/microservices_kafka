@@ -12,13 +12,13 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.util.backoff.FixedBackOff;
 
 import com.demo.person.domain.event.model.Person;
 import com.demo.person.domain.event.model.ResponseKafka;
 import com.demo.person.util.Constants;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 @Configuration
 @EnableKafka
@@ -26,6 +26,10 @@ public class KafkaConsumerConfig {
 
 	@Bean
 	public ConsumerFactory<String, ResponseKafka<Person>> responseKafkaConsumerFactory() {
+		
+		JsonDeserializer<ResponseKafka<Person>> deserializer = new JsonDeserializer<>(new TypeReference<ResponseKafka<Person>>() {});
+	    deserializer.addTrustedPackages("*");
+	    
 	    Map<String, Object> props = new HashMap<>();
 	    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, Constants.BOOTSTRAP_SERVERS_CONFIG); // Dirección del broker de Kafka
 	    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"); // Inicia el consumo desde el principio del topic si no hay offset anterior

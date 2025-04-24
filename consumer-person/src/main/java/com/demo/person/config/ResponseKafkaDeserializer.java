@@ -8,13 +8,21 @@ import com.demo.person.domain.event.model.Person;
 import com.demo.person.domain.event.model.ResponseKafka;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * Es para que Kafka pueda leer bytes de un topic y convertirlos a objetos.
  */
 public class ResponseKafkaDeserializer implements Deserializer<ResponseKafka<Person>> {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    public ResponseKafkaDeserializer() {
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
