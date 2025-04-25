@@ -130,8 +130,10 @@ services:
   app-producer:
     build: #  Define como se construye la imagen del contenedor.
       context: ./producer # Usa el directorio actual como contexto de construccion.
-      dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
+      dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar    
     container_name: producer
+    logging:
+      driver: json-file
     depends_on:
       - postgres
       - kafka1
@@ -156,7 +158,9 @@ services:
     container_name: consumerPerson
     depends_on:
       - kafka1
-      - kafka2      
+      - kafka2  
+    logging:
+      driver: json-file    
     env_file: # Carga variables de entorno desde un archivo .env
       - .env
     environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
@@ -174,7 +178,9 @@ services:
     container_name: consumerPublication
     depends_on:
       - kafka1
-      - kafka2      
+      - kafka2   
+    logging:
+      driver: json-file   
     env_file: # Carga variables de entorno desde un archivo .env
       - .env
     environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
@@ -192,7 +198,9 @@ services:
     container_name: consumerCommentary
     depends_on:
       - kafka1
-      - kafka2      
+      - kafka2   
+    logging:
+      driver: json-file   
     env_file: # Carga variables de entorno desde un archivo .env
       - .env
     environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
