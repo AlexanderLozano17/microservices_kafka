@@ -2,11 +2,13 @@ package com.demo.main;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Import;
 
 import com.demo.core.ModuleCoreConfig;
 import com.demo.producer.ModuleProducerConfig;
 
+@EnableDiscoveryClient
 @SpringBootApplication
 @Import({ModuleCoreConfig.class, ModuleProducerConfig.class})
 public class MainApp {

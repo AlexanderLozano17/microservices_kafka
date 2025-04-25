@@ -126,9 +126,22 @@ services:
     networks:
       - kafka_network
 
-#contendor de la aplicacion producer
+  #contendor de eureka server
+  eureka-server:
+    build:
+      context: ./eureka-server      
+      dockerfile: Dockerfile       
+    container_name: eureka-server
+    ports:
+      - "8761:8761"                 
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+    networks:
+      - kafka_network
+
+  #contendor de la aplicacion producer
   app-producer:
-    build: #  Define como se construye la imagen del contenedor.
+    build:  # Define como se construye la imagen del contenedor.
       context: ./producer # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar    
     container_name: producer
@@ -137,10 +150,12 @@ services:
     depends_on:
       - postgres
       - kafka1
-      - kafka2      
+      - kafka2   
+      - eureka-server  
     env_file: # Carga variables de entorno desde un archivo .env
       - .env
     environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} #  Lista de brokers de Kafka a los que se conecta.
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL} # URL de conexión a la base de datos.
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME} # Usuario de la base de datos.
@@ -152,13 +167,14 @@ services:
 
   #contendor de la aplicacion consumer-person
   app-consumer-person:
-    build: #  Define como se construye la imagen del contenedor.
+    build:  # Define como se construye la imagen del contenedor.
       context: ./consumer-person # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
     container_name: consumerPerson
     depends_on:
       - kafka1
       - kafka2  
+      - eureka-server
     logging:
       driver: json-file    
     env_file: # Carga variables de entorno desde un archivo .env
@@ -179,6 +195,7 @@ services:
     depends_on:
       - kafka1
       - kafka2   
+      - eureka-server
     logging:
       driver: json-file   
     env_file: # Carga variables de entorno desde un archivo .env
@@ -198,7 +215,8 @@ services:
     container_name: consumerCommentary
     depends_on:
       - kafka1
-      - kafka2   
+      - kafka2  
+      - eureka-server 
     logging:
       driver: json-file   
     env_file: # Carga variables de entorno desde un archivo .env

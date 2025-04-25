@@ -6,6 +6,21 @@ server:
 spring:
   application:
     name: ${CONSUMER_PUBLICATION_APP_NAME}
+    
+eureka:
+  client:
+    service-url:
+     # Dirección del servidor Eureka al que este cliente se registrará.
+     # Se utiliza una variable de entorno (${EUREKA_SERVER}) para que sea configurable según el entorno (desarrollo, pruebas, producción, etc.)
+      defaultZone: ${EUREKA_SERVER} 
+    
+    # Indica si este microservicio debe registrarse automáticamente en el servidor Eureka.
+    # true significa que sí se registrará.
+    register-with-eureka: true
+
+    # Indica si este microservicio debe obtener (descargar) la lista de servicios registrados en Eureka.
+    # true permite al cliente conocer y comunicarse con otros servicios registrados.
+    fetch-registry: true
 
 logging:
   level:
