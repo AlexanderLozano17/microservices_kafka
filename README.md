@@ -66,52 +66,71 @@ Cada acción del sistema (inicio, éxito, error, fin) es registrada, facilitando
 
 ---
 
-## **📌 Pasos para levantar los servicios**
 
-### 🔥 **Iniciar los contenedores**
-Ejecuta el siguiente comando en la terminal:
+## 🚀 Pasos para ejecutar el proyecto
 
-```sh
-docker-compose up -d --build
-```
+ **Paso 1: Clonar el repositorio:**
 
-📌 *Construye las imagenes Docker necesarias según los Dockerfile, luego iniciará los servicios en segundo plano.*
+   ```bash
+   git clone https://github.com/AlexanderLozano17/microservices_kafka.git
+   ```
 
-### 🖥️ **Verificar que los contenedores están corriendo**
-Ejecuta:
+ **Paso 2: Renombrar archivos `.yml`:**  
+ 
+	Reemplaza los nombres de los archivos de configuración eliminando la palabra `template` del nombre.  
+	Por ejemplo:
+	
+	
+	application-template.yml → application.yml
+	docker-compose-template.yml → docker-compose.yml
+	
 
-```sh
-docker ps
-```
+ **Paso 3: Verificar que Docker esté instalado:**  
 
-Deberías ver los contenedores `zookeeper`, `kafka1`, `kafka2`, `kafka-ui`, `postgresKafka` y `producerKafka` en ejecución.
+   Asegúrate de tener Docker y Docker Compose funcionando en tu máquina.
+   
+   ```bash
+   docker --version
+   ```
 
-### 🌍 **Acceder a la interfaz web de Kafka**
-Abre un navegador y entra a:
+ **Paso 4: Levantar los contenedores:**  
 
-```
-http://localhost:8080
-```
+   Desde la raíz del proyecto, ejecuta:
+   
+   ```bash
+   docker-compose up -d --build
+   ```
 
-Aquí podrás visualizar los topics y administrar Kafka gráficamente.
+ **Paso 5: erificar que los contenedores estén corriendo:**
 
-### ✅ **Probar la conexión con Kafka**
-Para listar los topics en Kafka, usa:
+   ```bash
+   docker ps
+   ```
 
-```sh
-docker exec -it kafka1 kafka-topics.sh --bootstrap-server kafka1:9092 --list
-```
+ **Paso 6: Acceder a Kafka UI:**  
 
-### ✅ **Crear los siguientes Topics**
-Para crear los topics en Kafka, usa:
+   Visualiza y administra los topics desde:  
+   
+   ```bash
+   👉 [http://localhost:8080](http://localhost:8080)
+   ```
+   
+### **Crear los topics (si no se crean automáticamente):**
 
-```sh
-docker exec -it kafka1 kafka-topics.sh --create --topic topic-persons --bootstrap-server kafka1:9092 --partition 3 --replication-factor 1
-docker exec -it kafka1 kafka-topics.sh --create --topic topic-publications --bootstrap-server kafka1:9092 --partition 3 --replication-factor 1
-docker exec -it kafka1 kafka-topics.sh --create --topic topic-commentaries --bootstrap-server kafka1:9092 --partition 3 --replication-factor 1
-```
-### ✅ **URL Documentación interactiva de la API REST **
+   ```bash
+   docker exec -it kafka1 kafka-topics.sh --create --topic topic-persons --bootstrap-server kafka1:9092 --partition 3 --replication-factor 1
+   docker exec -it kafka1 kafka-topics.sh --create --topic topic-publications --bootstrap-server kafka1:9092 --partition 3 --replication-factor 1
+   docker exec -it kafka1 kafka-topics.sh --create --topic topic-commentaries --bootstrap-server kafka1:9092 --partition 3 --replication-factor 1
+   ```
 
-```
-http://localhost:8081/swagger-ui/index.html
-```
+### **Documentación de la API REST:**  
+   Accede a Swagger UI para ver los endpoints disponibles:  
+   
+   ```bash
+   👉 [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)
+   ```
+  
+
+---
+
+✅ ¡Con esto ya puedes comenzar a trabajar con la arquitectura distribuida basada en Kafka!
