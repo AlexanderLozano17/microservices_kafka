@@ -35,11 +35,11 @@ El proyecto de **Spring Boot** está desarrollado de manera **modular**, lo que 
 
 ---
 
-## **📌 Arquitectura del Proyecto**
+## **📌 Arquitectura del Proyecto Event-Driven Architecture**
 
 ```
 📁 microservices
-├── 📁 producer                 # Proyecto multi-módulo (parent POM adentro)
+├── 📁 producer                 # Microservicio multi-módulo (parent POM adentro)
 │   ├── 📁 main-app             # Punto de entrada Spring Boot
 │   ├── 📁 module-core          # Lógica de negocio principal
 │   ├── 📁 module-producer      # Productor de mensajes Kafka
@@ -56,7 +56,7 @@ El proyecto de **Spring Boot** está desarrollado de manera **modular**, lo que 
 
 
 ```
-Este diseño modular permite mayor **reutilización** y **mantenibilidad**.
+Producer esta diseño modular permite mayor **reutilización** y **mantenibilidad**.
 
 ---
 
