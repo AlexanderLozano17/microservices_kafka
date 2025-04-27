@@ -44,7 +44,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>3.1.12</version>  <!-- Ajusta la version segun la que uses -->
+				<version>3.2.0</version>  <!-- Ajusta la version segun la que uses -->
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
@@ -152,6 +152,7 @@
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>3.2.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

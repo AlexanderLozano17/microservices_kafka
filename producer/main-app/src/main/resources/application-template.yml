@@ -63,7 +63,13 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health,info  # Exponemos health e info (puedes agregar más como metrics)
   endpoint:
-    mappings:
-      enabled: true
+    health:
+      show-details: always  # DESARROLLO Siempre mostrar los detalles completos del estado (por ejemplo, estado de la DB, disco, etc.)
+      #show-details: when-authorized  # PRODUCCIÓN
+  health:
+    db:
+      enabled: true          # Activar healthcheck de base de datos
+    kafka:
+      enabled: true          # Activar healthcheck de Kafka

@@ -39,6 +39,11 @@
 	    	<groupId>org.springdoc</groupId>
 	      	<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 	    </dependency>
+	    
+	    <dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
 
 		<!--proporciona un endpoint /actuator/mappings que muestra todos los endpoints registrados en tu aplicacion.-->
 		<dependency>
@@ -63,11 +68,6 @@
         	<artifactId>module-common</artifactId>
         	<version>0.0.1-SNAPSHOT</version>
         </dependency>
-        
-        <dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>

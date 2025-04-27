@@ -35,7 +35,8 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health  # Exponemos solo el endpoint /actuator/health al exterior
   endpoint:
-    mappings:
-      enabled: true
+    health:
+      show-details: always  # DESARROLLO Siempre mostrar los detalles completos del estado (por ejemplo, estado de la DB, disco, etc.)
+      #show-details: when-authorized  # PRODUCCIÓN
