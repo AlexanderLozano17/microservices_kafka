@@ -1,11 +1,28 @@
 server:
-  port: 8761
+  port: ${EUREKA_PORT}
 
 spring:
   application:
-    name: eureka-server
+    name: ${EUREKA_APP_NAME}
 
 eureka:
   client:
   register-with-eureka: false  # 🔒 Este servidor **no se registra** a sí mismo en Eureka.
   fetch-registry: false        # 📦 Este servidor **no descarga el registro** de otros servicios.
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    com.netflix.discovery: DEBUG  # Muestra detalles del cliente Eureka (registro, latidos, etc.)
+    org.springframework.cloud.netflix.eureka: DEBUG  # Muestra interacciones con el servidor Eureka

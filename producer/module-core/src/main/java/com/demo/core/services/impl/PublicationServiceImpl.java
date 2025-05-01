@@ -63,10 +63,12 @@ public class PublicationServiceImpl implements PublicationService {
 		logger.info(LogHelper.start(getClass(), "getPublicationById"));		
 		
 		Optional<Publication> publication = publicationRepository.findById(id);
-		PublicationDTO publicationDTO = publicationDTO(publication.get());
+		PublicationDTO publicationDTO = null;
 		
 		if (publication.isPresent()) {
+			publicationDTO = publicationDTO(publication.get());
 			logger.info(LogHelper.success(getClass(), "getPublicationById", String.format(LogPerson.PERSON_FOUND, publicationDTO.getId())));
+		
 		} else {
 			logger.warn(LogHelper.warn(getClass(), "getPublicationById", String.format(LogPerson.PERSON_NOT_FOUND, publicationDTO.getId())));
 		}		

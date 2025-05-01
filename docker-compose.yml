@@ -1,26 +1,6 @@
 version: '3.9'
 services:
 
-  #contendor de eureka server
-  eureka-server:
-    build:
-      context: ./eureka-server      
-      dockerfile: Dockerfile       
-    container_name: eureka-server
-    restart: always
-    ports:
-      - "8761:8761"                 
-    environment:
-      - SPRING_PROFILES_ACTIVE=default
-    networks:
-      - kafka_network
-    healthcheck:
-      test: ["CMD", "curl", "--silent", "--fail", "http://eureka-server:8761/eureka/"]  # Verifica que Kafka esté disponible en el puerto 8761
-      interval: 30s
-      retries: 3
-      start_period: 10s
-      timeout: 10s
-
   # Contenedor Zookeeper: Es un servicio de coordinacion distribuida que Kafka utiliza para gestionar el cluster de brokers.
   zookeeper:
     image: bitnami/zookeeper:latest
@@ -30,6 +10,8 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes  # Permite conexiones sin autenticacion
     ports:
       - "2181:2181"  # Puerto para comunicarse con Kafka
+    env_file: # Carga variables de entorno desde un archivo .env
+      - .env
     networks:
       - kafka_network
     volumes:
@@ -53,6 +35,8 @@ services:
     ports:
       - "9092:9092"  # Puerto para conexiones internas
       - "29092:29092" # Puerto para conexiones externas
+    env_file: # Carga variables de entorno desde un archivo .env
+      - .env
     environment:     
       KAFKA_BROKER_ID: 1  # Identificacion del broker
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181  # Conexion con Zookeeper
@@ -82,10 +66,9 @@ services:
     volumes:
       - kafka1_data:/bitnami/kafka  # Persistencia de datos de Kafka
     healthcheck:
-      test: ["CMD", "nc", "-z", "kafka1", "9092"]  # Verifica que Kafka esté disponible en el puerto 9092
-      interval: 30s
-      retries: 3
-      start_period: 10s
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/9092"] 
+      retries: 5
+      start_period: 30s
       timeout: 10s
       
   # Contenedor Kafka2: Es el broker que gestiona la mensajeria y la transmision de eventos en tiempo real.
@@ -101,6 +84,8 @@ services:
     ports:
       - "9093:9093"  # Puerto para conexiones internas
       - "29093:29093" # Puerto para conexiones externas
+    env_file: # Carga variables de entorno desde un archivo .env
+      - .env
     environment:
       KAFKA_BROKER_ID: 2 # Identificacion del broker
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181 # Conexion con Zookeeper
@@ -133,11 +118,10 @@ services:
     volumes:
       - kafka2_data:/bitnami/kafka  # Persistencia de datos de Kafka
     healthcheck:
-      test: ["CMD", "nc", "-z", "kafka2", "9093"]  # Verifica que Kafka esté disponible en el puerto 9093
-      interval: 30s
-      retries: 3
-      start_period: 10s
-      timeout: 10s
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/9093"] 
+      retries: 5
+      start_period: 30s
+      timeout: 10s      
 
   # Contenedor Kafka-UI: Es una interfaz web para visualizar y gestionar Kafka.
   kafka-ui:
@@ -146,6 +130,8 @@ services:
     restart: always
     ports:
       - "8080:8080"  # Puerto para acceder a la interfaz web
+    env_file: # Carga variables de entorno desde un archivo .env
+      - .env
     environment:
       KAFKA_CLUSTERS_0_NAME: local  # Nombre del cluster en la interfaz
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:9092,kafka2:9093  # Direccion de los broker de Kafka
@@ -167,6 +153,9 @@ services:
     restart: always
     ports:
       - "5432:5432"
+    # Carga variables de entorno desde un archivo .env
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
       POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
@@ -176,18 +165,41 @@ services:
     networks:
       - kafka_network    
     healthcheck:
-      test: ["CMD", "nc", "-z", "postgres", "5432"]  # Verifica que Kafka esté disponible en el puerto 5432
+      test: ["CMD", "pg_isready", "-U", "root"]  
       interval: 30s
       retries: 3
       start_period: 10s
       timeout: 10s
+
+  #contendor de eureka server
+  eureka-server:
+    build:
+      context: ./eureka-server      
+      dockerfile: Dockerfile       
+    container_name: ${EUREKA_CONTAINER_NAME}
+    restart: always
+    ports:
+      - "8761:8761"  
+    # Carga variables de entorno desde un archivo .env
+    env_file: 
+      - .env               
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+    networks:
+      - kafka_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
 
   #contendor de la aplicacion producer
   app-producer:
     build:  # Define como se construye la imagen del contenedor.
       context: ./producer # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar    
-    container_name: app-producer
+    container_name: ${PRODUCER_APP_NAME}
     restart: always
     logging:
       driver: json-file
@@ -196,20 +208,15 @@ services:
       - postgres
       - kafka1
       - kafka2       
-    env_file: # Carga variables de entorno desde un archivo .env
+    env_file:
       - .env
-    environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} #  Lista de brokers de Kafka a los que se conecta.
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL} # URL de conexión a la base de datos.
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME} # Usuario de la base de datos.
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD} # Contraseña de la base de datos.
     ports:
       - 8081:8081
     networks:
       - kafka_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://app-producer:8081/actuator/health"]  # Verifica que el contenedor esté disponible en el puerto
+      #  Verifica que el contenedor esté disponible en el puerto
+      test: ["CMD", "curl", "-f", "http://${PRODUCER_APP_NAME}:8081/actuator/health"]  
       interval: 30s
       timeout: 10s
       retries: 5
@@ -219,23 +226,21 @@ services:
     build:  # Define como se construye la imagen del contenedor.
       context: ./consumer-person # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
-    container_name: app-consumer-person
+    container_name: ${CONSUMER_PERSON_APP_NAME}
     restart: always
     depends_on:
       # Está diciendo que NO solo esperar a que el servicio arranque, sino que además esperas a que su healthcheck sea exitoso antes de levantar el contenedor dependiente
       - eureka-server
     logging:
       driver: json-file    
-    env_file: # Carga variables de entorno desde un archivo .env
+    env_file:
       - .env
-    environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} #  Lista de brokers de Kafka a los que se conecta.
     ports:
       - 8082:8082
     networks:
       - kafka_network    
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://app-consumer-person:8082/actuator/health"]  # Verifica que el contenedor esté disponible en el puerto
+      test: ["CMD", "curl", "-f", "http://${CONSUMER_PERSON_APP_NAME}:8082/actuator/health"]  # Verifica que el contenedor esté disponible en el puerto
       interval: 30s
       timeout: 10s
       retries: 5
@@ -245,23 +250,20 @@ services:
     build: #  Define como se construye la imagen del contenedor.
       context: ./consumer-publication # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
-    container_name: app-consumer-publication
+    container_name: ${CONSUMER_PUBLICATION_APP_NAME}
     restart: always
     depends_on:
-       # Está diciendo que NO solo esperar a que el servicio arranque, sino que además esperas a que su healthcheck sea exitoso antes de levantar el contenedor dependiente
       - eureka-server
     logging:
       driver: json-file   
-    env_file: # Carga variables de entorno desde un archivo .env
+    env_file:
       - .env
-    environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} #  Lista de brokers de Kafka a los que se conecta.
     ports:
       - 8083:8083
     networks:
       - kafka_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://app-consumer-publication:8083/actuator/health"]  # Verifica que el contenedor esté disponible en el puerto
+      test: ["CMD", "curl", "-f", "http://${CONSUMER_PUBLICATION_APP_NAME}:8083/actuator/health"]  # Verifica que el contenedor esté disponible en el puerto
       interval: 30s
       timeout: 10s
       retries: 5
@@ -271,23 +273,43 @@ services:
     build: #  Define como se construye la imagen del contenedor.
       context: ./consumer-commentary # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
-    container_name: app-consumer-commentary
+    container_name: ${CONSUMER_COMMENTARY_APP_NAME}
     restart: always
     depends_on:
-       # Está diciendo que NO solo esperar a que el servicio arranque, sino que además esperas a que su healthcheck sea exitoso antes de levantar el contenedor dependiente
       - eureka-server
     logging:
       driver: json-file   
-    env_file: # Carga variables de entorno desde un archivo .env
+    env_file:
       - .env
-    environment: # Define variables de entorno utilizadas por la aplicación Spring Boot.
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} #  Lista de brokers de Kafka a los que se conecta.
     ports:
       - 8084:8084
     networks:
       - kafka_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://app-consumer-commentary:8084/actuator/health"]  # Verifica que el contenedor esté disponible en el puerto
+      test: ["CMD", "curl", "-f", "http://${CONSUMER_COMMENTARY_APP_NAME}:8084/actuator/health"]  # Verifica que el contenedor esté disponible en el puerto
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  #contendor de api-gateway
+  gateway:
+    build:
+      context: ./api-gateway    
+      dockerfile: Dockerfile       
+    container_name: ${GATEWAY_APP_NAME}
+    restart: always
+    depends_on:
+      - eureka-server
+    logging:
+      driver: json-file   
+    ports:
+      - "8085:8085"                 
+    networks:
+      - kafka_network
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://${GATEWAY_APP_NAME}:8085/actuator/health"]  # Verifica que el contenedor esté disponible en el puerto
       interval: 30s
       timeout: 10s
       retries: 5

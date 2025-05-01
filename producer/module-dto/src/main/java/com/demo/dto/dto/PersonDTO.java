@@ -30,6 +30,8 @@ public class PersonDTO implements Serializable {
     @JsonProperty("telephone")
 	private String telephone;
     
+	 public PersonDTO() {}
+    
 	 public PersonDTO(Long id, String names, String lastNames, int age, String email, String telephone) {
 		this.id = id;
 		this.names = names;

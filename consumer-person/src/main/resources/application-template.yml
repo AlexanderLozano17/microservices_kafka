@@ -14,8 +14,8 @@ eureka:
   client:
     service-url:
      # Dirección del servidor Eureka al que este cliente se registrará.
-     # Se utiliza una variable de entorno (${EUREKA_SERVER}) para que sea configurable según el entorno (desarrollo, pruebas, producción, etc.)
-      defaultZone: ${EUREKA_SERVER} 
+     # Se utiliza una variable de entorno (${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}) para que sea configurable según el entorno (desarrollo, pruebas, producción, etc.)
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE} 
     
     # Indica si este microservicio debe registrarse automáticamente en el servidor Eureka.
     # true significa que sí se registrará.
@@ -35,8 +35,16 @@ management:
   endpoints:
     web:
       exposure:
-        include: health  # Exponemos solo el endpoint /actuator/health al exterior
+        include: health, info  # Exponemos solo el endpoint /actuator/health al exterior
   endpoint:
     health:
       show-details: always  # DESARROLLO Siempre mostrar los detalles completos del estado (por ejemplo, estado de la DB, disco, etc.)
       #show-details: when-authorized  # PRODUCCIÓN
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    com.netflix.discovery: DEBUG  # Muestra detalles del cliente Eureka (registro, latidos, etc.)
+    org.springframework.cloud.netflix.eureka: DEBUG  # Muestra interacciones con el servidor Eureka

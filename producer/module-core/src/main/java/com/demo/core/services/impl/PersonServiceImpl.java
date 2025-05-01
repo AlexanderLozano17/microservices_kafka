@@ -61,16 +61,17 @@ public class PersonServiceImpl implements PersonService {
 		logger.info(LogHelper.start(getClass(), "getPersonById"));		
 				
 		Optional<Person> person = personRepository.findById(id);
-		PersonDTO personDTO = personDTO(person.get());
 		
 		if (person.isPresent()) {
+			PersonDTO personDTO = personDTO(person.get());
 			logger.info(LogHelper.success(getClass(), "getPersonById", String.format(LogPerson.PERSON_FOUND, id)));
+			return Optional.of(personDTO);
 			
 		} else {
 			logger.warn(LogHelper.warn(getClass(), "getPersonById", String.format(LogPerson.PERSON_NOT_FOUND, id)));
 		}
 		logger.info(LogHelper.end(getClass(), "getPersonById"));
-		return Optional.of(personDTO);
+		return Optional.empty();
 		
 	}
 
@@ -81,9 +82,11 @@ public class PersonServiceImpl implements PersonService {
 		
 		Optional<Person> personWithPublications = personRepository.findById(id);
 		
-		PersonWithPublicationsDTO personWithPublicationsDTO = personWithPublicationsDTO(personWithPublications.get());
-		
-		return Optional.of(personWithPublicationsDTO);
+		if (personWithPublications.isPresent()) {
+			PersonWithPublicationsDTO personWithPublicationsDTO = personWithPublicationsDTO(personWithPublications.get());
+			return Optional.of(personWithPublicationsDTO);
+		}
+		return Optional.empty();
 	}
 	
 	@Override
@@ -91,13 +94,15 @@ public class PersonServiceImpl implements PersonService {
 	public List<PersonWithPublicationsDTO> getAllPeopleWithPublications() {
 		logger.info(LogHelper.start(getClass(), "getAllPeopleWithPublications"));
 		
-		List<Person> listPerson = personRepository.findAll();
-		
-		List<PersonWithPublicationsDTO> personWithPublicationsDTOs = listPerson.stream()
-				.map(personWithPublications -> personWithPublicationsDTO(personWithPublications))
-				.collect(Collectors.toList());		
+		List<Person> listPerson = personRepository.findAll();		
+		List<PersonWithPublicationsDTO> personWithPublicationsDTOs = new ArrayList<>();
 		
 		if (!listPerson.isEmpty()) {
+			
+			personWithPublicationsDTOs = listPerson.stream()
+					.map(personWithPublications -> personWithPublicationsDTO(personWithPublications))
+					.collect(Collectors.toList());				
+			
 			logger.info(LogHelper.success(getClass(), "getAllPeopleWithPublications", String.format(LogPerson.PERSON_LIST_SUCCESS, personWithPublicationsDTOs.size())));
 		} else {
 			logger.warn(LogHelper.warn(getClass(), "getAllPeopleWithPublications", LogPerson.PERSON_NOT_CONTENT));
@@ -111,8 +116,10 @@ public class PersonServiceImpl implements PersonService {
 		logger.info(LogHelper.start(getClass(), "getAllPersons"));
 		
 		List<Person> listPerson = personRepository.findAll();
-		List<PersonDTO> listPersonDTOs = getListPersonDTO(listPerson);
+		List<PersonDTO> listPersonDTOs = new ArrayList<>();
 		if (!listPerson.isEmpty()) {
+			
+			listPersonDTOs = getListPersonDTO(listPerson);
 			logger.info(LogHelper.success(getClass(), "getAllPersons", String.format(LogPerson.PERSON_LIST_SUCCESS, listPerson.size())));
 			
 		} else {

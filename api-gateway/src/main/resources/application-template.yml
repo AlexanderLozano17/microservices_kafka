@@ -1,0 +1,45 @@
+server:
+  port: ${GATEWAY_APP_PORT}
+  context-path: /
+
+spring:
+  application:
+    name: ${GATEWAY_APP_NAME}
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true  # Habilita descubrimiento dinámico vía Eureka
+          lower-case-service-id: true
+
+  main:
+    web-application-type: reactive
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      default-zone: ${EUREKAEUREKA_CLIENT_SERVICEURL_DEFAULTZONE_SERVER}
+      
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.netflix.discovery: DEBUG  # Muestra detalles del cliente Eureka (registro, latidos, etc.)
+    org.springframework.cloud.netflix.eureka: DEBUG  # Muestra interacciones con el servidor Eureka
+
+ 
+
+
+
+
+
