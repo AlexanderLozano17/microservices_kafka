@@ -39,7 +39,15 @@ Adicionalmente, se incorpora un enfoque de arquitectura de microservicios utiliz
 
 ---
 
-## **📌 Arquitectura del Proyecto Event-Driven Architecture**
+
+
+## 📘 Arquitectura del Proyecto
+
+Puedes ver la arquitectura de microservicios en el siguiente PDF:
+
+👉 [Ver arquitectura C4 en PDF](docs/arquitectura.pdf)
+
+## **📌 Estructura del Proyecto Event-Driven Architecture**
 
 ```
 📁 microservices
