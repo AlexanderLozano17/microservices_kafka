@@ -1,26 +1,30 @@
 # 📦 Proyecto Spring Boot + Apache Kafka (Docker Ready)
 
-Este proyecto demuestra cómo integrar **Spring Boot con Apache Kafka**, permitiendo enviar, recibir y almacenar mensajes en formato **JSON** de manera eficiente. Además, utilizamos **Docker Compose** para simplificar la configuración y ejecución del entorno, y **Kafka UI** para visualizar y monitorear en tiempo real los tópicos, mensajes y el estado del **broker** Kafka.
+Este proyecto demuestra cómo integrar ** Spring Boot**  con ** Apache Kafka** , permitiendo enviar, recibir y almacenar mensajes en formato **JSON**  de manera eficiente. Además, utilizamos **Docker Compose**  para simplificar la configuración y ejecución del entorno, y **Kafka UI** para visualizar y monitorear en tiempo real los tópicos, mensajes y el estado del broker Kafka.
 
-El proyecto de **Spring Boot** está desarrollado de manera **modular**, lo que facilita la escalabilidad, mantenimiento y separación de responsabilidades.
+El proyecto de Spring Boot está desarrollado de manera modular, lo que facilita la escalabilidad, mantenimiento y separación de responsabilidades.
+
+Adicionalmente, se incorpora un enfoque de arquitectura de microservicios utilizando Spring Cloud Netflix Eureka como servidor de descubrimiento para registrar y localizar automáticamente los distintos servicios del sistema. También se incluye un **API Gateway** basado en **Spring Cloud Gateway**, que actúa como punto de entrada único, gestionando el enrutamiento, autenticación y filtrado de solicitudes hacia los microservicios registrados en **Eureka**.
 
 
 ## 🛠️ Tecnologías Utilizadas
 
-| Tecnología          | Descripción                                               |
-|---------------------|-----------------------------------------------------------|
-| **Java 17**         | Lenguaje de programación principal                        |
-| **Spring Boot**     | Framework para desarrollo rápido de aplicaciones Java     |
-| **Spring Data JPA** | Abstracción para el acceso a datos con repositorios       |
-| **Spring Kafka**    | Cliente Kafka para integración con Spring                 |
-| **Apache Kafka**    | Plataforma distribuida de mensajería                      |
-| **Kafka UI**        | Interfaz gráfica para gestionar Kafka                     |
-| **Zookeeper**       | Coordinador de servicios para Kafka                       |
-| **OpenAPI** 		  | Documentación interactiva de la API REST 				  |
-| **Docker**          | Contenedorización de la aplicación                        |
-| **Docker Compose**  | Orquestación de contenedores                              |
-| **Jackson**         | Serialización y deserialización JSON                      |
-| **Maven**           | Gestión del ciclo de vida del proyecto Java               |
+| Tecnología          			 | Descripción                                                   |
+|--------------------------------|---------------------------------------------------------------|
+| **Java 17**         			 | Lenguaje de programación principal                            |
+| **Spring Boot**     			 | Framework para desarrollo rápido de aplicaciones Java         |
+| **Spring Cloud Netflix Eureka**| Registro y descubrimiento de servicios                        |
+| **Spring Cloud Gateway **      | punto de entrada centralizado para todas las solicitudes HTTP |
+| **Spring Data JPA** 			 | Abstracción para el acceso a datos con repositorios           |
+| **Spring Kafka**    			 | Cliente Kafka para integración con Spring                     |
+| **Apache Kafka**    			 | Plataforma distribuida de mensajería                          |
+| **Kafka UI**        			 | Interfaz gráfica para gestionar Kafka                         |
+| **Zookeeper**       			 | Coordinador de servicios para Kafka                           |
+| **OpenAPI** 		  			 | Documentación interactiva de la API REST 				     |
+| **Docker**          			 | Contenedorización de la aplicación                            |
+| **Docker Compose**  			 | Orquestación de contenedores                                  |
+| **Jackson**         			 | Serialización y deserialización JSON                          |
+| **Maven**           			 | Gestión del ciclo de vida del proyecto Java                   |
 
 
 ## 💡 Buenas prácticas y patrones aplicados
@@ -46,7 +50,8 @@ El proyecto de **Spring Boot** está desarrollado de manera **modular**, lo que 
 │   ├── 📁 module-dto           # Data Transfer Objects (DTO)
 │   ├── 📁 module-common        # Utilitarios, constantes, logs, etc.
 │   ├── 📄 pom.xml              # POM raíz del proyecto producer
-│
+├── 📁 api-gateway	           # Microservicio api gate-way
+├── 📁 eureka-server	           # Registro y descubrimiento de servicios 
 ├── 📁 consumer-person          # Microservicio consumidor de mensajes de persona
 ├── 📁 consumer-publication     # Microservicio consumidor de publicaciones
 ├── 📁 consumer-commentary      # Microservicio consumidor de comentarios
