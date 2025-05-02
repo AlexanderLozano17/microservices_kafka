@@ -1,12 +1,15 @@
 server:
-  port: ${CONSUMER_PUBLICATION_APP_PORT}
+  port: ${CONSUMER_COMMENTARY_APP_PORT}
   servlet:
     context-path: /
 
 spring:
   application:
-    name: ${CONSUMER_PUBLICATION_APP_NAME}
-    
+    name: ${CONSUMER_COMMENTARY_APP_NAME}
+  
+kafka:
+  bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+
 eureka:
   client:
     service-url:
@@ -29,10 +32,7 @@ logging:
     org.hibernate.SQL: DEBUG
     com.netflix.discovery: DEBUG  # Muestra detalles del cliente Eureka (registro, latidos, etc.)
     org.springframework.cloud.netflix.eureka: DEBUG  # Muestra interacciones con el servidor Eureka
-
-kafka:
-  bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
-  
+    
 management:
   endpoints:
     web:

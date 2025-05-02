@@ -194,6 +194,30 @@ services:
       start_period: 20s
       timeout: 5s
 
+ #contendor de la aplicacion producer
+  app-auth:
+    build:  # Define como se construye la imagen del contenedor.
+      context: ./auth # Usa el directorio actual como contexto de construccion.
+      dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar    
+    container_name: ${AUTH_APP_NAME}
+    restart: always
+    logging:
+      driver: json-file
+    depends_on:
+      - eureka-server     
+    env_file:
+      - .env
+    ports:
+      - 8086:8086
+    networks:
+      - kafka_network
+    healthcheck:
+      #  Verifica que el contenedor esté disponible en el puerto
+      test: ["CMD", "curl", "-f", "http://${AUTH_APP_NAME}:8086/actuator/health"]  
+      interval: 20s
+      timeout: 10s
+      retries: 5
+
   #contendor de la aplicacion producer
   app-producer:
     build:  # Define como se construye la imagen del contenedor.

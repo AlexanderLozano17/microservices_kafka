@@ -1,14 +1,11 @@
 server:
-  port: ${CONSUMER_PERSON_APP_PORT}
+  port: ${CONSUMER_PUBLICATION_APP_PORT}
   servlet:
     context-path: /
 
 spring:
   application:
-    name: ${CONSUMER_PERSON_APP_NAME}
-
-kafka:
-  bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+    name: ${CONSUMER_PUBLICATION_APP_NAME}
 
 eureka:
   client:
@@ -30,6 +27,11 @@ logging:
     root: INFO
     org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
+    com.netflix.discovery: DEBUG  # Muestra detalles del cliente Eureka (registro, latidos, etc.)
+    org.springframework.cloud.netflix.eureka: DEBUG  # Muestra interacciones con el servidor Eureka
+
+kafka:
+  bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
   
 management:
   endpoints:
@@ -40,11 +42,3 @@ management:
     health:
       show-details: always  # DESARROLLO Siempre mostrar los detalles completos del estado (por ejemplo, estado de la DB, disco, etc.)
       #show-details: when-authorized  # PRODUCCIÓN
-
-logging:
-  level:
-    root: INFO
-    org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
-    com.netflix.discovery: DEBUG  # Muestra detalles del cliente Eureka (registro, latidos, etc.)
-    org.springframework.cloud.netflix.eureka: DEBUG  # Muestra interacciones con el servidor Eureka

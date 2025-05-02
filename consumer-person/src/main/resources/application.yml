@@ -1,0 +1,44 @@
+server:
+  port: ${CONSUMER_PERSON_APP_PORT}
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: ${CONSUMER_PERSON_APP_NAME}
+
+kafka:
+  bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+
+eureka:
+  client:
+    service-url:
+     # Dirección del servidor Eureka al que este cliente se registrará.
+     # Se utiliza una variable de entorno (${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}) para que sea configurable según el entorno (desarrollo, pruebas, producción, etc.)
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE} 
+    
+    # Indica si este microservicio debe registrarse automáticamente en el servidor Eureka.
+    # true significa que sí se registrará.
+    register-with-eureka: true
+
+    # Indica si este microservicio debe obtener (descargar) la lista de servicios registrados en Eureka.
+    # true permite al cliente conocer y comunicarse con otros servicios registrados.
+    fetch-registry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info  # Exponemos solo el endpoint /actuator/health al exterior
+  endpoint:
+    health:
+      show-details: always  # DESARROLLO Siempre mostrar los detalles completos del estado (por ejemplo, estado de la DB, disco, etc.)
+      #show-details: when-authorized  # PRODUCCIÓN
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    com.netflix.discovery: DEBUG  # Muestra detalles del cliente Eureka (registro, latidos, etc.)
+    org.springframework.cloud.netflix.eureka: DEBUG  # Muestra interacciones con el servidor Eureka

@@ -1,0 +1,48 @@
+server:
+  port: ${GATEWAY_APP_PORT}
+  context-path: /
+
+spring:
+  application:
+    name: ${GATEWAY_APP_NAME}
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true # Habilita descubrimiento dinámico vía Eureka
+          lower-case-service-id: true
+      routes:
+        - id: auth-service
+          uri: lb://app-auth
+          predicates:
+            - Path=/api/auth/**
+        - id: producer-service
+          uri: lb://app-producer
+          predicates:
+            - Path=/api/person/**
+        # Agrega aquí otros servicios
+
+  jwt:
+    secret: ${JWT_SECRET_KEY}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE} 
+    register-with-eureka: true
+    fetch-registry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.netflix.discovery: DEBUG  # Muestra detalles del cliente Eureka (registro, latidos, etc.)
+    org.springframework.cloud.netflix.eureka: DEBUG  # Muestra interacciones con el servidor Eureka
