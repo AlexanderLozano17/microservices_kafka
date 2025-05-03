@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# =========================
+# Script para administrar contenedores Docker usando docker-compose.
+# Uso:
+#   ./contenedores up      -> Levanta los contenedores en segundo plano con build
+#   ./contenedores down    -> Detiene y elimina los contenedores
+#   ./contenedores downv   -> Detiene, elimina contenedores y volúmenes
+# =========================
+
+# Verifica si el usuario pasó al menos un parámetro
+if [ $# -lt 1 ]; then
+    echo "Uso: $0 {up|down|downv}"  # $0 es el nombre del script
+    exit 1  # Finaliza el script con error
+fi
+
+# Primer parámetro: acción requerida (up, down, downv)
+ACCION=$1
+
+# Estructura condicional para determinar qué comando ejecutar
+case "$ACCION" in
+    up)
+        echo "🔼 Levantando contenedores con docker-compose up -d --build"
+        docker-compose up -d --build # Construye y levanta en segundo plano
+        ;;
+    down)
+        echo "🔽 Deteniendo y eliminando contenedores con docker-compose down"
+        docker-compose down # Detiene y elimina contenedores
+        ;;
+
+    downv)
+        echo "🧹 Deteniendo, eliminando contenedores y volúmenes con docker-compose down -v"
+        docker-compose down -v # También elimina los volúmenes
+        ;;
+    *)
+        # Si la opción no es válida, se muestra un mensaje de ayuda
+        echo "❌ Opción inválida: $ACCION"
+        echo "Uso: $0 {up|down|downv}"
+        exit 1
+        ;;
+esac

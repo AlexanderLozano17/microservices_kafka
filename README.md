@@ -125,7 +125,7 @@ Cada acción del sistema (inicio, éxito, error, fin) es registrada, facilitando
    Visualiza y administra los topics desde:  
    
    ```bash
-   👉 [http://localhost:8080](http://localhost:8080)
+   👉 http://localhost:8087
    ```
    
 ### **Crear los topics (si no se crean automáticamente):**

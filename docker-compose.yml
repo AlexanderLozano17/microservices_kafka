@@ -129,10 +129,11 @@ services:
     container_name: kafka-ui
     restart: always
     ports:
-      - "8080:8080"  # Puerto para acceder a la interfaz web
+      - "8087:8087"  # Puerto para acceder a la interfaz web
     env_file: # Carga variables de entorno desde un archivo .env
       - .env
     environment:
+      SERVER_PORT: 8087  # Cambiar el puerto interno a 8087 
       KAFKA_CLUSTERS_0_NAME: local  # Nombre del cluster en la interfaz
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:9092,kafka2:9093  # Direccion de los broker de Kafka
     networks:
@@ -140,7 +141,7 @@ services:
     volumes:
       - kafka-ui-data:/config  # Persistencia de la configuracion de la interfaz
     healthcheck:
-      test: ["CMD", "nc", "-z", "kafka-ui", "8080"]  # Verifica que Kafka esté disponible en el puerto 8080
+      test: ["CMD", "nc", "-z", "kafka-ui", "8010"]  # Verifica que Kafka esté disponible en el puerto 8080
       interval: 30s
       retries: 3
       start_period: 10s
