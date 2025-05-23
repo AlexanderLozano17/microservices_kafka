@@ -24,7 +24,7 @@ services:
 
   # Contenedor Kafka: Es el broker que gestiona la mensajeria y la transmision de eventos en tiempo real.
   kafka1:
-    image: bitnami/kafka:latest
+    image: bitnami/kafka:3.7
     container_name: kafka1
     restart: always
     depends_on:
@@ -39,10 +39,10 @@ services:
       - .env
     environment:     
       KAFKA_BROKER_ID: 1  # Identificacion del broker
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181  # Conexion con Zookeeper
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181  # Conexion con Zookeeper
 
       # Configuracion de los listeners (definen como Kafka acepta conexiones)
-      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092
+      KAFKA_CFG_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092
       # - INTERNAL: Para conexiones internas dentro del contenedor
       # - EXTERNAL: Para conexiones externas fuera del contenedor
 
@@ -73,7 +73,7 @@ services:
       
   # Contenedor Kafka2: Es el broker que gestiona la mensajeria y la transmision de eventos en tiempo real.
   kafka2:
-    image: bitnami/kafka:latest
+    image: bitnami/kafka:3.7
     container_name: kafka2
     restart: always
     depends_on:
@@ -88,10 +88,10 @@ services:
       - .env
     environment:
       KAFKA_BROKER_ID: 2 # Identificacion del broker
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181 # Conexion con Zookeeper
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181 # Conexion con Zookeeper
 
       # Configuracion de los listeners (definen como Kafka acepta conexiones)
-      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9093,EXTERNAL://0.0.0.0:29093
+      KAFKA_CFG_LISTENERS: INTERNAL://0.0.0.0:9093,EXTERNAL://0.0.0.0:29093
       # - INTERNAL: Para conexiones internas dentro del contenedor
       # - EXTERNAL: Para conexiones externas fuera del contenedor
 
