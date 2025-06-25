@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.demo.core.entities.Publication;
+import com.demo.core.entities.PublicationEntity;
 import com.demo.core.repositories.PublicationRepository;
 import com.demo.core.services.PublicationService;
 import com.demo.dto.dto.CommentaryDTO;
@@ -38,11 +38,11 @@ public class PublicationServiceImpl implements PublicationService {
 	
 	@Override
 	@Transactional
-	public Optional<PublicationDTO> createPublication(Publication publicacion) {
+	public Optional<PublicationDTO> createPublication(PublicationEntity publicacion) {
 		logger.info(LogHelper.start(getClass(), "createPublication"));
 		
 	    try {
-	        Publication savedPublication = publicationRepository.save(publicacion);	 	        
+	    	PublicationEntity savedPublication = publicationRepository.save(publicacion);	 	        
 	        String mensaje = String.format(LogPublication.PUBLICATION_SAVE_SUCCESS, savedPublication.getId());
 	        logger.info(LogHelper.success(getClass(), "createPublication", mensaje));
 	        
@@ -62,7 +62,7 @@ public class PublicationServiceImpl implements PublicationService {
 	public Optional<PublicationDTO> getPublicationById(Long id) {
 		logger.info(LogHelper.start(getClass(), "getPublicationById"));		
 		
-		Optional<Publication> publication = publicationRepository.findById(id);
+		Optional<PublicationEntity> publication = publicationRepository.findById(id);
 		PublicationDTO publicationDTO = null;
 		
 		if (publication.isPresent()) {
@@ -80,7 +80,7 @@ public class PublicationServiceImpl implements PublicationService {
 	public Optional<PublicationWithCommentsDTO> getPublicationWithComments(Long id) {
 		logger.info(LogHelper.start(getClass(), "getPublicationWithComments"));		
 		
-		Publication publication = publicationRepository.findById(id).get();
+		PublicationEntity publication = publicationRepository.findById(id).get();
 		
 		PublicationWithCommentsDTO PublicationWithCommentsDTO = publicationWithCommentsDTO(publication);
 		
@@ -92,7 +92,7 @@ public class PublicationServiceImpl implements PublicationService {
 	public List<PublicationDTO> getAllPublications() {
 		logger.info(LogHelper.start(getClass(), "getAllPublications"));
 		
-		List<Publication> listPublication = publicationRepository.findAll();
+		List<PublicationEntity> listPublication = publicationRepository.findAll();
 		
 		List<PublicationDTO> publicationDTOs = getPublicationDTO(listPublication);
 		
@@ -125,7 +125,7 @@ public class PublicationServiceImpl implements PublicationService {
 	 * @param Commentary
 	 * @return
 	 */
-	private PublicationDTO publicationDTO(Publication publication) {
+	private PublicationDTO publicationDTO(PublicationEntity publication) {
 		logger.info(LogHelper.start(getClass(), "publicationDTO"));
 		if (publication == null) return null;
 		return new PublicationDTO(publication.getId(), 
@@ -138,7 +138,7 @@ public class PublicationServiceImpl implements PublicationService {
 	 * @param listPublication
 	 * @return
 	 */
-	private List<PublicationDTO> getPublicationDTO(List<Publication> listPublication) {
+	private List<PublicationDTO> getPublicationDTO(List<PublicationEntity> listPublication) {
 		logger.info(LogHelper.start(getClass(), "getPublicationDTO"));
 		if (listPublication.size() == 0) return new ArrayList<>();
 		return listPublication.stream().map(publication -> publicationDTO(publication)).collect(Collectors.toList()); 
@@ -149,7 +149,7 @@ public class PublicationServiceImpl implements PublicationService {
 	 * @param publication
 	 * @return
 	 */
-	private PublicationWithCommentsDTO publicationWithCommentsDTO(Publication publication) {
+	private PublicationWithCommentsDTO publicationWithCommentsDTO(PublicationEntity publication) {
 		logger.info(LogHelper.start(getClass(), "publicationWithCommentsDTO"));
 		
 		List<CommentaryDTO> listCommentaryDTOs = publication.getCommentaries().stream()

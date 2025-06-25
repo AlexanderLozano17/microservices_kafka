@@ -31,8 +31,12 @@ public class KafkaProducerConfig {
         config.put(ProducerConfig.LINGER_MS_CONFIG, properties.getProducer().getLingerMs()); // Tiempo que espera antes de enviar un lote (en milisegundos).
         config.put(ProducerConfig.ACKS_CONFIG, properties.getProducer().getAcks()); // 	Nivel de confirmación: "all" significa que todos los nodos deben confirmar la recepción del mensaje.
         config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, properties.getProducer().isEnableIdempotence()); // Habilita la idempotencia, evitando duplicados en los mensajes.
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class); // Serializa la clave del mensaje en formato String
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class); // Serializa el valor del mensaje en formato Objecto.
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, properties.getProducer().getKeySerializer()); // Serializa la clave del mensaje en formato String
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, properties.getProducer().getValueSerializer()); // Serializa el valor del mensaje en formato Objecto.
+        
+        // *** LA LÍNEA CLAVE PARA QUE FUNCIONE LA SERIALIZACIÓN DE OBJETOS ***
+        config.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, properties.getProducer().getProperties().getSpringJson().isAddTypeHeaders()); // Añade un header al mensaje Kafka con el tipo de clase Java
+
         return new DefaultKafkaProducerFactory<>(config);
 	}
 		

@@ -23,7 +23,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name ="publication")
-public class Publication implements Serializable {
+public class PublicationEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -34,7 +34,7 @@ public class Publication implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "person_id", nullable = false) // Define la clave foránea
 	@JsonBackReference(value = "person-publication") // Esto evita la recursión infinita
-	private Person person;
+	private PersonEntity person;
 	
 	private String title;
 	
@@ -46,9 +46,19 @@ public class Publication implements Serializable {
 	
 	@OneToMany(mappedBy = "publication", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference(value = "publication-commentary") // Evita la recursión infinita
-	private List<Commentary> commentaries;
+	private List<CommentaryEntity> commentaries;
 	
-	public Publication() {}
+	public PublicationEntity() {}
+	
+	public PublicationEntity(Long id, PersonEntity person, String title, String content, LocalDate datePublication,
+            List<CommentaryEntity> commentaries) {
+		this.id = id;
+		this.person = person;
+		this.title = title;
+		this.content = content;
+		this.datePublication = datePublication;
+		this.commentaries = commentaries;
+	}
 	
 	@PrePersist // Se ejecuta antes de guardar en la BD
     public void prePersist() {
@@ -72,14 +82,14 @@ public class Publication implements Serializable {
 	/**
 	 * @return the person
 	 */
-	public Person getPerson() {
+	public PersonEntity getPerson() {
 		return person;
 	}
 
 	/**
 	 * @param person the person to set
 	 */
-	public void setPerson(Person person) {
+	public void setPerson(PersonEntity person) {
 		this.person = person;
 	}
 
@@ -128,14 +138,14 @@ public class Publication implements Serializable {
 	/**
 	 * @return the commentary
 	 */
-	public List<Commentary> getCommentaries() {
+	public List<CommentaryEntity> getCommentaries() {
 		return commentaries;
 	}
 
 	/**
 	 * @param commentary the commentary to set
 	 */
-	public void setCommentaries(List<Commentary> commentaries) {
+	public void setCommentaries(List<CommentaryEntity> commentaries) {
 		this.commentaries = commentaries;
 	}
 }	

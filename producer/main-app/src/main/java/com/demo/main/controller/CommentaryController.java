@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.core.entities.Commentary;
+import com.demo.core.entities.CommentaryEntity;
 import com.demo.core.services.CommentaryService;
 import com.demo.dto.dto.CommentaryDTO;
 import com.demo.dto.dto.ResponseApi;
@@ -57,7 +57,7 @@ public class CommentaryController {
 		    }
 		)
 	@PostMapping("/create")
-	public ResponseEntity<ResponseApi<CommentaryDTO>> createCommentary(@RequestBody Commentary Commentary) {		
+	public ResponseEntity<ResponseApi<CommentaryDTO>> createCommentary(@RequestBody CommentaryEntity Commentary) {		
 		logger.info(LogHelper.start(getClass(), "createCommentary"));
 		
 		try {
@@ -84,11 +84,11 @@ public class CommentaryController {
 		    }
 		)
 	@GetMapping
-	public ResponseEntity<ResponseApi<List<Commentary>>> getAllCommentaries() {
+	public ResponseEntity<ResponseApi<List<CommentaryEntity>>> getAllCommentaries() {
 		logger.info(LogHelper.start(getClass(), "getAllCommentaries"));
 		
 		try {
-			List<Commentary> commentaries = commentaryService.getAllCommentaries();
+			List<CommentaryEntity> commentaries = commentaryService.getAllCommentaries();
 			if (!commentaries.isEmpty()) {
 				logger.info(LogHelper.success(getClass(), "getAllCommentaries", String.format(LogCommentary.COMMENT_LIST_SUCCESS, commentaries.size())));
 				logger.info(LogHelper.end(getClass(), "getAllCommentaries"));

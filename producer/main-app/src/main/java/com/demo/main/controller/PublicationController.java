@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.core.entities.Publication;
+import com.demo.core.entities.PublicationEntity;
 import com.demo.core.services.PublicationService;
 import com.demo.dto.dto.PublicationDTO;
 import com.demo.dto.dto.PublicationWithCommentsDTO;
@@ -57,7 +57,7 @@ public class PublicationController {
 		    }
 		)
 	@PostMapping("/create")
-	public ResponseEntity<ResponseApi<PublicationDTO>> createPublication(@RequestBody Publication publication) {
+	public ResponseEntity<ResponseApi<PublicationDTO>> createPublication(@RequestBody PublicationEntity publication) {
 		logger.info(LogHelper.start(getClass(), "createPublication"));
 		
 		try {

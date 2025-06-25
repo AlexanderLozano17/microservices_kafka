@@ -35,6 +35,9 @@ public class KafkaProperties {
         private boolean enableIdempotence;
         private String keySerializer;
         private String valueSerializer;
+        
+        private ProducerSpecificProperties properties = new ProducerSpecificProperties();
+
 
         public int getRetries() {
             return retries;
@@ -98,6 +101,39 @@ public class KafkaProperties {
 
         public void setValueSerializer(String valueSerializer) {
             this.valueSerializer = valueSerializer;
+        }
+        
+        public ProducerSpecificProperties getProperties() {
+            return properties;
+        }
+        
+        public void setProperties(ProducerSpecificProperties properties) {
+            this.properties = properties;
+        }
+        
+     // *** NUEVA CLASE INTERNA PARA LAS PROPIEDADES ESPECÍFICAS DEL JSON SERIALIZER ***
+        public static class ProducerSpecificProperties {
+            private SpringJsonProperties springJson = new SpringJsonProperties();
+
+            public SpringJsonProperties getSpringJson() {
+                return springJson;
+            }
+
+            public void setSpringJson(SpringJsonProperties springJson) {
+                this.springJson = springJson;
+            }
+
+            public static class SpringJsonProperties {
+                private boolean addTypeHeaders; // Mapea a 'add-type-headers'
+
+                public boolean isAddTypeHeaders() { // isAddTypeHeaders para booleanos
+                    return addTypeHeaders;
+                }
+
+                public void setAddTypeHeaders(boolean addTypeHeaders) {
+                    this.addTypeHeaders = addTypeHeaders;
+                }
+            }
         }
     }
 }

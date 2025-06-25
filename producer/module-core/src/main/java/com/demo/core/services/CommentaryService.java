@@ -3,7 +3,7 @@ package com.demo.core.services;
 import java.util.List;
 import java.util.Optional;
 
-import com.demo.core.entities.Commentary;
+import com.demo.core.entities.CommentaryEntity;
 import com.demo.dto.dto.CommentaryDTO;
 
 public interface CommentaryService {
@@ -13,7 +13,7 @@ public interface CommentaryService {
 	 * @param commentary
 	 * @return
 	 */
-	Optional<CommentaryDTO> createCommentary(Commentary commentary);
+	Optional<CommentaryDTO> createCommentary(CommentaryEntity commentary);
 	
 	/**
 	 * 
@@ -26,7 +26,7 @@ public interface CommentaryService {
 	 * 
 	 * @return
 	 */
-	List<Commentary> getAllCommentaries();
+	List<CommentaryEntity> getAllCommentaries();
 	
 	/**
 	 * 

@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "commentary")
-public class Commentary implements Serializable {
+public class CommentaryEntity implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -29,19 +29,27 @@ public class Commentary implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "publication_id") // Define la clave foranea
 	@JsonBackReference(value = "publication-commentary")
-	private Publication publication;
+	private PublicationEntity publication;
 	
 	@ManyToOne
 	@JoinColumn(name = "person_id") // Define la clave foranea
 	@JsonBackReference(value = "person-commentary")
-	private Person person;
+	private PersonEntity person;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate dateCommentary;
 	
 	private String content;
 	
-	public Commentary() {}
+	public CommentaryEntity() {}
+	
+	public CommentaryEntity(Long id, PublicationEntity publication, PersonEntity person, LocalDate dateCommentary, String content) {
+	    this.id = id;
+	    this.publication = publication;
+	    this.person = person;
+	    this.dateCommentary = dateCommentary;
+	    this.content = content;
+	}
 	
 	@PrePersist
 	public void prePersist() {
@@ -65,28 +73,28 @@ public class Commentary implements Serializable {
 	/**
 	 * @return the publicacion
 	 */
-	public Publication getPublication() {
+	public PublicationEntity getPublication() {
 		return publication;
 	}
 
 	/**
 	 * @param publicacion the publicacion to set
 	 */
-	public void setPublication(Publication publication) {
+	public void setPublication(PublicationEntity publication) {
 		this.publication = publication;
 	}
 
 	/**
 	 * @return the person
 	 */
-	public Person getPerson() {
+	public PersonEntity getPerson() {
 		return person;
 	}
 
 	/**
 	 * @param person the person to set
 	 */
-	public void setPerson(Person person) {
+	public void setPerson(PersonEntity person) {
 		this.person = person;
 	}
 

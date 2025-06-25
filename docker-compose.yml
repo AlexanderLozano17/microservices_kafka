@@ -5,7 +5,7 @@ services:
   zookeeper:
     image: bitnami/zookeeper:latest
     container_name: zookeeper
-    restart: always
+    restart: on-failure
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes  # Permite conexiones sin autenticacion
     ports:
@@ -26,7 +26,7 @@ services:
   kafka1:
     image: bitnami/kafka:3.7
     container_name: kafka1
-    restart: always
+    restart: on-failure
     depends_on:
       # estás diciendo que NO solo esperar a que el servicio arranque, sino que además esperas a que su healthcheck sea exitoso antes de levantar el contenedor dependiente
       zookeeper:
@@ -75,7 +75,7 @@ services:
   kafka2:
     image: bitnami/kafka:3.7
     container_name: kafka2
-    restart: always
+    restart: on-failure
     depends_on:
       # estás diciendo que NO solo esperar a que el servicio arranque, sino que además esperas a que su healthcheck sea exitoso antes de levantar el contenedor dependiente
       zookeeper:
@@ -127,7 +127,7 @@ services:
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
-    restart: always
+    restart: on-failure
     ports:
       - "8080:8080"  # Puerto para acceder a la interfaz web
     env_file: # Carga variables de entorno desde un archivo .env
@@ -150,7 +150,7 @@ services:
   postgres:
     image: postgres:14.4
     container_name: postgresKafka
-    restart: always
+    restart: on-failure
     ports:
       - "5432:5432"
     # Carga variables de entorno desde un archivo .env
@@ -177,7 +177,7 @@ services:
       context: ./eureka-server      
       dockerfile: Dockerfile       
     container_name: ${EUREKA_CONTAINER_NAME}
-    restart: always
+    restart: on-failure
     ports:
       - "8761:8761"  
     # Carga variables de entorno desde un archivo .env
@@ -200,7 +200,7 @@ services:
       context: ./producer # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar    
     container_name: ${PRODUCER_APP_NAME}
-    restart: always
+    restart: on-failure
     logging:
       driver: json-file
     depends_on:
@@ -212,6 +212,37 @@ services:
       - .env
     ports:
       - 8081:8081
+      - "5006:5006" # Opcional: Puerto para depuración remota (recomendado para desarrollo)
+    environment:
+      # Variables de entorno para Spring Boot DevTools
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true # Habilita el reinicio de DevTools
+      - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true # Habilita LiveReload (útil si tienes un frontend que también se recarga)
+      # Configuración para depuración remota de Java (JDWP)
+      #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006"
+    volumes:
+      #1. ¡Este es el volumen CRÍTICO para el hot-reloading!
+      # Monta tu directorio 'producer' local (donde está el pom.xml y src/)
+      # en el WORKDIR del contenedor (/app).
+      # Cualquier cambio que guardes localmente se reflejará aquí.
+      - ./producer:/app 
+      # 2. ¡IMPORTANTE para proyectos Maven/Gradle!
+      # Excluye el directorio 'target' (donde se generan los archivos de compilación como .class y JARs)
+      # del mapeo bidireccional de volumen.
+      # Esto evita conflictos entre el host y el contenedor y permite que Maven compile
+      # sus archivos temporales y JARs *dentro* del contenedor de forma aislada.
+      # El path es /app/nombre_de_tu_modulo/target si es un proyecto multi-módulo
+      # o /app/target si es un proyecto simple.
+      # Según tu Dockerfile, el JAR se copia desde /app/main-app/target, así que asumo esa estructura.
+      - /app/main-app/target
+    
+    # *** CAMBIO CLAVE EN EL ENTRYPOINT ***
+    # 1. Compila e instala todos los módulos (para que el JAR esté listo).
+    # 2. Luego, ejecuta directamente el JAR de tu aplicación Spring Boot,
+    #    pasándole los argumentos de depuración DENTRO de la llamada a 'java -jar'.
+    entrypoint: ["sh", "-c", "./mvnw install -DskipTests && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006 -jar ./main-app/target/main-app-0.0.1-SNAPSHOT.jar"]
+    # ********************************
+    
+    # ******************************** 
     networks:
       - kafka_network
     healthcheck:
@@ -227,7 +258,7 @@ services:
       context: ./consumer-person # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
     container_name: ${CONSUMER_PERSON_APP_NAME}
-    restart: always
+    restart: on-failure
     depends_on:
       # Está diciendo que NO solo esperar a que el servicio arranque, sino que además esperas a que su healthcheck sea exitoso antes de levantar el contenedor dependiente
       - eureka-server
@@ -237,6 +268,7 @@ services:
       - .env
     ports:
       - 8082:8082
+      - "5002:5002"
     networks:
       - kafka_network    
     healthcheck:
@@ -251,7 +283,7 @@ services:
       context: ./consumer-publication # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
     container_name: ${CONSUMER_PUBLICATION_APP_NAME}
-    restart: always
+    restart: on-failure
     depends_on:
       - eureka-server
     logging:
@@ -260,6 +292,7 @@ services:
       - .env
     ports:
       - 8083:8083
+      - "5003:5003"
     networks:
       - kafka_network
     healthcheck:
@@ -274,7 +307,7 @@ services:
       context: ./consumer-commentary # Usa el directorio actual como contexto de construccion.
       dockerfile: Dockerfile # Especifica el archivo Dockerfile a utilizar
     container_name: ${CONSUMER_COMMENTARY_APP_NAME}
-    restart: always
+    restart: on-failure
     depends_on:
       - eureka-server
     logging:
@@ -283,6 +316,7 @@ services:
       - .env
     ports:
       - 8084:8084
+      - "5004:5004"
     networks:
       - kafka_network
     healthcheck:
@@ -297,13 +331,14 @@ services:
       context: ./api-gateway    
       dockerfile: Dockerfile       
     container_name: ${GATEWAY_APP_NAME}
-    restart: always
+    restart: on-failure
     depends_on:
       - eureka-server
     logging:
       driver: json-file   
     ports:
-      - "8085:8085"                 
+      - "8085:8085"      
+      - "5005:5005"           
     networks:
       - kafka_network
     env_file:

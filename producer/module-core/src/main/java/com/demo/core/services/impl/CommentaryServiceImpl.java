@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.demo.core.entities.Commentary;
+import com.demo.core.entities.CommentaryEntity;
 import com.demo.core.repositories.CommentaryRepository;
 import com.demo.core.services.CommentaryService;
 import com.demo.dto.dto.CommentaryDTO;
@@ -34,11 +34,11 @@ public class CommentaryServiceImpl implements CommentaryService {
 		
 	@Override
 	@Transactional
-	public Optional<CommentaryDTO> createCommentary(Commentary commentary) {
+	public Optional<CommentaryDTO> createCommentary(CommentaryEntity commentary) {
 		logger.info(LogHelper.start(getClass(), "createCommentary"));
 		
 		try {
-			Commentary saveCommentary = commentaryRepository.save(commentary);	
+			CommentaryEntity saveCommentary = commentaryRepository.save(commentary);	
 			String mensaje = String.format(LogCommentary.COMMENT_SAVE_SUCCESS, saveCommentary.getId());			
 			logger.info(LogHelper.success(getClass(), "createCommentary", mensaje));
 			
@@ -58,13 +58,13 @@ public class CommentaryServiceImpl implements CommentaryService {
 	@Transactional(readOnly = true)
 	public Optional<CommentaryDTO> getCommentaryById(Long id) {
 		logger.info(LogHelper.start(getClass(), "getCommentaryById"));
-		Commentary commentary = commentaryRepository.findById(id).get();
+		CommentaryEntity commentary = commentaryRepository.findById(id).get();
 		return Optional.of(getommentaryDTO(commentary));
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Commentary> getAllCommentaries() {
+	public List<CommentaryEntity> getAllCommentaries() {
 		logger.info(LogHelper.start(getClass(), "getAllCommentaries"));
 		return commentaryRepository.findAll() ;
 	}
@@ -90,7 +90,7 @@ public class CommentaryServiceImpl implements CommentaryService {
 	 * @param Commentary
 	 * @return
 	 */
-	private CommentaryDTO getommentaryDTO(Commentary commentary) {
+	private CommentaryDTO getommentaryDTO(CommentaryEntity commentary) {
 		logger.info(LogHelper.start(getClass(), "getommentaryDTO"));
 		return new CommentaryDTO(commentary.getId(), 
 				commentary.getPublication().getId(), 
@@ -103,7 +103,7 @@ public class CommentaryServiceImpl implements CommentaryService {
 	 * @param Commentary
 	 * @return
 	 */
-	private List<CommentaryDTO> getListCommentaryDTO(List<Commentary> listCommentary) {
+	private List<CommentaryDTO> getListCommentaryDTO(List<CommentaryEntity> listCommentary) {
 		return listCommentary.stream().map(commentary -> getommentaryDTO(commentary)).collect(Collectors.toList());
 	}
 }

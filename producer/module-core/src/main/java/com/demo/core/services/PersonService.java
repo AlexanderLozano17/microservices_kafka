@@ -3,7 +3,7 @@ package com.demo.core.services;
 import java.util.List;
 import java.util.Optional;
 
-import com.demo.core.entities.Person;
+import com.demo.core.entities.PersonEntity;
 import com.demo.dto.dto.PersonDTO;
 import com.demo.dto.dto.PersonWithPublicationsDTO;
 
@@ -14,7 +14,7 @@ public interface PersonService {
 	 * @param person
 	 * @return
 	 */
-	Optional<PersonDTO> createPerson(Person person);
+	Optional<PersonDTO> createPerson(PersonEntity person);
 	
 	/**
 	 * 

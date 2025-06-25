@@ -1,7 +1,11 @@
 package com.demo.producer.services;
 
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.kafka.support.SendResult;
+
 public interface KafkaProducerPersonService {
 
-	void sendMessageRecordPerson(Object message);
+	CompletableFuture<SendResult<String, Object>>  sendMessageRecordPerson(Object message);
 	
 }

@@ -3,14 +3,16 @@ package com.demo.core.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.demo.core.entities.Person;
+import com.demo.core.entities.PersonEntity;
 import com.demo.core.repositories.PersonRepository;
 import com.demo.core.services.PersonService;
 import com.demo.dto.dto.PersonDTO;
@@ -37,21 +39,33 @@ public class PersonServiceImpl implements PersonService {
 	
 	@Override
 	@Transactional
-	public Optional<PersonDTO> createPerson(Person person) {
+	public Optional<PersonDTO> createPerson(PersonEntity person) {
 		logger.info(LogHelper.start(getClass(), "createPerson"));
 		try {
-			Person savePerson = personRepository.save(person);	
+			PersonEntity savePerson = personRepository.save(person);	
 			String message = String.format(LogPerson.PERSON_SAVE_SUCCESS, savePerson.getId());
 			logger.info(LogHelper.success(getClass(), "createPerson", message));
 			
 			PersonDTO personDTO = personDTO(savePerson);
-			producerService.sendMessageRecordPerson(new ResponseKafka(message, personDTO)); 		 
+			// Envía el mensaje a Kafka y obtén el CompletableFuture
+	        CompletableFuture<SendResult<String, Object>> kafkaFuture = producerService.sendMessageRecordPerson(new ResponseKafka(message, personDTO)); 		 
 			 
-			return Optional.of(personDTO); 	
+	        // Bloquea y espera el resultado del envío a Kafka.
+	        // Si quieres que el envío a Kafka sea parte de la transacción DB, DEBES ESPERAR SU RESULTADO.
+	        // Si el envío falla, lanzamos una excepción para que la transacción de la base de datos se revierta.
+	        kafkaFuture.join(); // Esto bloquea y espera el resultado. Si hay una excepción, la relanza.
+	        
+	        // Si llegamos aquí, el envío a Kafka fue exitoso, entonces la transacción DB hace commit.
+	        return Optional.of(personDTO);
 			
 		} catch (Exception e) {
 			logger.error(LogHelper.error(getClass(), "createPerson", String.format(LogPerson.PERSON_SAVE_ERROR, e.getMessage())), e);
-			return Optional.empty();
+			 // *** CRÍTICO para la transacción: relanzar la excepción si quieres rollback ***
+	        // Si la excepción no es relanzada, @Transactional no la verá y hará commit.
+	        // Puedes relanzar e como una RuntimeException o una excepción específica de negocio.
+	        throw new RuntimeException(LogHelper.error(getClass(), "createPerson", e.getMessage())); 
+	        // return Optional.empty(); // Esto evita el rollback. Solo úsalo si no quieres que la DB haga rollback.
+	 
 		}
 	}
 	
@@ -60,7 +74,7 @@ public class PersonServiceImpl implements PersonService {
 	public Optional<PersonDTO> getPersonById(Long id) {
 		logger.info(LogHelper.start(getClass(), "getPersonById"));		
 				
-		Optional<Person> person = personRepository.findById(id);
+		Optional<PersonEntity> person = personRepository.findById(id);
 		
 		if (person.isPresent()) {
 			PersonDTO personDTO = personDTO(person.get());
@@ -80,7 +94,7 @@ public class PersonServiceImpl implements PersonService {
 	public Optional<PersonWithPublicationsDTO> getPersonWithPublications(Long id) {
 		logger.info(LogHelper.start(getClass(), "getPersonWithPublications"));
 		
-		Optional<Person> personWithPublications = personRepository.findById(id);
+		Optional<PersonEntity> personWithPublications = personRepository.findById(id);
 		
 		if (personWithPublications.isPresent()) {
 			PersonWithPublicationsDTO personWithPublicationsDTO = personWithPublicationsDTO(personWithPublications.get());
@@ -94,7 +108,7 @@ public class PersonServiceImpl implements PersonService {
 	public List<PersonWithPublicationsDTO> getAllPeopleWithPublications() {
 		logger.info(LogHelper.start(getClass(), "getAllPeopleWithPublications"));
 		
-		List<Person> listPerson = personRepository.findAll();		
+		List<PersonEntity> listPerson = personRepository.findAll();		
 		List<PersonWithPublicationsDTO> personWithPublicationsDTOs = new ArrayList<>();
 		
 		if (!listPerson.isEmpty()) {
@@ -115,7 +129,7 @@ public class PersonServiceImpl implements PersonService {
 	public List<PersonDTO> getAllPersons() {
 		logger.info(LogHelper.start(getClass(), "getAllPersons"));
 		
-		List<Person> listPerson = personRepository.findAll();
+		List<PersonEntity> listPerson = personRepository.findAll();
 		List<PersonDTO> listPersonDTOs = new ArrayList<>();
 		if (!listPerson.isEmpty()) {
 			
@@ -149,7 +163,7 @@ public class PersonServiceImpl implements PersonService {
 	 * @param persona
 	 * @return
 	 */
-	private PersonDTO personDTO(Person person) {
+	private PersonDTO personDTO(PersonEntity person) {
 		logger.info(LogHelper.start(getClass(), "personDTO"));
 		if (person == null) return null;
 		return new PersonDTO(person.getId(),
@@ -165,7 +179,7 @@ public class PersonServiceImpl implements PersonService {
 	 * @param listPerson
 	 * @return
 	 */
-	private List<PersonDTO> getListPersonDTO(List<Person> listPerson) {
+	private List<PersonDTO> getListPersonDTO(List<PersonEntity> listPerson) {
 		logger.info(LogHelper.start(getClass(), "getPersonDTO"));
 		if (listPerson.size() == 0) return new ArrayList<PersonDTO>(); 
 		return listPerson.stream().map(person -> personDTO(person)).collect(Collectors.toList());
@@ -176,7 +190,7 @@ public class PersonServiceImpl implements PersonService {
 	 * @param person
 	 * @return
 	 */
-	private PersonWithPublicationsDTO personWithPublicationsDTO(Person person) {
+	private PersonWithPublicationsDTO personWithPublicationsDTO(PersonEntity person) {
 		logger.info(LogHelper.start(getClass(), "PersonWithPublicationsDTO"));
 		
 		if (person == null) return null;

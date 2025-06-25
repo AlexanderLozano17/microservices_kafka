@@ -3,7 +3,7 @@ package com.demo.core.services;
 import java.util.List;
 import java.util.Optional;
 
-import com.demo.core.entities.Publication;
+import com.demo.core.entities.PublicationEntity;
 import com.demo.dto.dto.PublicationDTO;
 import com.demo.dto.dto.PublicationWithCommentsDTO;
 
@@ -14,7 +14,7 @@ public interface PublicationService {
 	 * @param publicacion
 	 * @return
 	 */
-	Optional<PublicationDTO> createPublication(Publication publicacion);
+	Optional<PublicationDTO> createPublication(PublicationEntity publicacion);
 
 	/**
 	 * 

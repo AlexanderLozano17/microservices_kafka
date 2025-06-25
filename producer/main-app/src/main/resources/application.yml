@@ -28,7 +28,7 @@ spring:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} 
     #bootstrap-servers: ${KAFKA_HOST_IP:localhost}:29092,${KAFKA_HOST_IP:localhost}:29093 # Dirección de los broker de Kafka, usa la IP real de tu máquina
   
-  producer:
+    producer:
       retries: ${KAFKA_PRODUCER_RETRIES}  # Número de reintentos en caso de fallo al enviar un mensaje.
       batch-size: ${KAFKA_PRODUCER_BATCH_SIZE}  # Tamaño máximo del lote antes de enviarlo.
       buffer-memory: ${KAFKA_PRODUCER_BUFFER_MEMORY}  # Memoria máxima utilizada por el buffer del productor.
@@ -37,6 +37,8 @@ spring:
       enable-idempotence: ${KAFKA_PRODUCER_ENABLE_IDEMPOTENCE}  # Evita duplicados asegurando la idempotencia.
       key-serializer: ${KAFKA_PRODUCER_KEY_SERIALIZER}  # Serializador para la clave.
       value-serializer: ${KAFKA_PRODUCER_VALUE_SERIALIZER}  # Serializador para el valor.
+      properties:
+        spring.json.add.type.headers: ${KAFKA_PRODUCER_PROPERTIES_JSON_ADD_TYPE_HEADERS}
 
 eureka:
   client:

@@ -18,10 +18,11 @@ spring:
 
 eureka:
   client:
+    service-url:
+      default-zone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
     register-with-eureka: true
     fetch-registry: true
-    service-url:
-      default-zone: ${EUREKAEUREKA_CLIENT_SERVICEURL_DEFAULTZONE_SERVER}
+
       
 management:
   endpoints:

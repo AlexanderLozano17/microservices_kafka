@@ -25,12 +25,6 @@ eureka:
     # true permite al cliente conocer y comunicarse con otros servicios registrados.
     fetch-registry: true
 
-logging:
-  level:
-    root: INFO
-    org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
-  
 management:
   endpoints:
     web:

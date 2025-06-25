@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,11 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.core.entities.Person;
+import com.demo.core.entities.PersonEntity;
 import com.demo.core.services.PersonService;
 import com.demo.dto.dto.PersonDTO;
 import com.demo.dto.dto.PersonWithPublicationsDTO;
-import com.demo.dto.dto.PublicationDTO;
 import com.demo.dto.dto.ResponseApi;
 import com.demo.main.utils.ApiMessages;
 import com.demo.utils.LogHelper;
@@ -58,7 +58,7 @@ public class PersonController {
 		    }
 		)
 	@PostMapping("/create")
-    public ResponseEntity<ResponseApi<PersonDTO>> createPerson(@RequestBody Person person) {
+    public ResponseEntity<ResponseApi<PersonDTO>> createPerson(@Validated @RequestBody PersonEntity person) {
         logger.info(LogHelper.start(getClass(), "createPerson"));
 
         try {
