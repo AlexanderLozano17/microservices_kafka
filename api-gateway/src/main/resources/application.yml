@@ -10,11 +10,21 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true  # Habilita descubrimiento dinámico vía Eureka
+          enabled: true # Habilita descubrimiento dinámico vía Eureka
           lower-case-service-id: true
+      routes:
+        - id: auth-service
+          uri: lb://auth
+          predicates:
+            - Path=/api/auth/**
+        - id: producer-service
+          uri: lb://producer
+          predicates:
+            - Path=/api/person/**
+        # Agrega aquí otros servicios
 
-  main:
-    web-application-type: reactive
+  jwt:
+    secret: ${JWT_SECRET_KEY}
 
 eureka:
   client:
@@ -23,7 +33,6 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
 
-      
 management:
   endpoints:
     web:
@@ -37,10 +46,3 @@ logging:
   level:
     com.netflix.discovery: DEBUG  # Muestra detalles del cliente Eureka (registro, latidos, etc.)
     org.springframework.cloud.netflix.eureka: DEBUG  # Muestra interacciones con el servidor Eureka
-
- 
-
-
-
-
-

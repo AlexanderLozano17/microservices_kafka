@@ -1,0 +1,19 @@
+# Ignorar carpetas de construcción
+target/
+out/
+
+# Ignorar control de versiones
+.git/
+.gitignore
+
+# Ignorar archivos de entorno y configuración local
+.env
+*.iml
+.idea/
+.vscode/
+
+# Ignorar documentación y otros archivos no necesarios
+Dockerfile
+README.md
+*.md
+*.log

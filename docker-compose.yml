@@ -216,7 +216,7 @@ services:
     environment:
       # Variables de entorno para Spring Boot DevTools
       - SPRING_DEVTOOLS_RESTART_ENABLED=true # Habilita el reinicio de DevTools
-      - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true # Habilita LiveReload (útil si tienes un frontend que también se recarga)
+      #- SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true # Habilita LiveReload (útil si tienes un frontend que también se recarga)
       # Configuración para depuración remota de Java (JDWP)
       #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006"
     volumes:
@@ -268,7 +268,30 @@ services:
       - .env
     ports:
       - 8082:8082
+      # Mapea el puerto 5002 del host al puerto 5002 del contenedor para depuración
       - "5002:5002"
+    volumes:
+      # Monta tu directorio 'consumer-person' local (donde está el pom.xml y src/)
+      # en el WORKDIR del contenedor (/app). Esto es CRÍTICO para el hot-reloading.
+      - ./consumer-person:/app
+      # Excluye el directorio 'target' del mapeo bidireccional.
+      # Esto permite que Maven compile sus archivos *dentro* del contenedor sin conflictos.
+      - /app/target
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true # Habilita el reinicio de DevTools
+    # *** INICIO DE LA PROPIEDAD ENTRYPOINT ***
+    # Este comando se ejecutará cuando el contenedor inicie.
+    # 1. 'sh -c': Ejecuta los siguientes comandos en un shell de Bash/Sh, permitiendo usar '&&'.
+    # 2. './mvnw install -DskipTests': Compila e instala tu proyecto Maven (consumer-person)
+    #    dentro del contenedor, saltándose los tests. Esto genera el JAR ejecutable en './target/'.
+    # 3. '&&': Si la compilación es exitosa, ejecuta el siguiente comando.
+    # 4. 'java -agentlib:jdwp=... -jar ./target/<NOMBRE_DE_TU_JAR>.jar':
+    #    Ejecuta directamente el JAR de tu aplicación Spring Boot.
+    #    - Los argumentos '-agentlib:jdwp=...' activan el depurador JDWP en el puerto 5002.
+    #    - './target/<NOMBRE_DE_TU_JAR>.jar' es la ruta al JAR compilado dentro del contenedor.
+    #      ¡ADAPTA '<NOMBRE_DE_TU_JAR>.jar' con el nombre real de tu JAR!
+    #      (Usualmente es <artifactId>-<version>.jar, por ejemplo, 'consumer-person-0.0.1-SNAPSHOT.jar')
+    entrypoint: ["sh", "-c", "./mvnw install -DskipTests && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5002 -jar ./target/${CONSUMER_PERSON_APP_NAME}-0.0.1-SNAPSHOT.jar"]
     networks:
       - kafka_network    
     healthcheck:
@@ -293,6 +316,12 @@ services:
     ports:
       - 8083:8083
       - "5003:5003"
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+    volumes:
+      - ./consumer-publication:/app
+      - /app/target
+    entrypoint: ["sh", "-c", "./mvnw install -DskipTests && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5003 -jar ./target/${CONSUMER_PUBLICATION_APP_NAME}-0.0.1-SNAPSHOT.jar"]
     networks:
       - kafka_network
     healthcheck:
@@ -317,6 +346,12 @@ services:
     ports:
       - 8084:8084
       - "5004:5004"
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+    volumes:
+      - ./consumer-commentary:/app
+      - /app/target
+    entrypoint: ["sh", "-c", "./mvnw install -DskipTests && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5004 -jar ./target/${CONSUMER_COMMENTARY_APP_NAME}-0.0.1-SNAPSHOT.jar"] 
     networks:
       - kafka_network
     healthcheck:
@@ -338,7 +373,13 @@ services:
       driver: json-file   
     ports:
       - "8085:8085"      
-      - "5005:5005"           
+      - "5005:5005"   
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+    volumes:
+      - ./api-gateway:/app
+      - /app/target
+    entrypoint: ["sh", "-c", "./mvnw install -DskipTests && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar ./target/${GATEWAY_APP_NAME}-0.0.1-SNAPSHOT.jar"]
     networks:
       - kafka_network
     env_file:
